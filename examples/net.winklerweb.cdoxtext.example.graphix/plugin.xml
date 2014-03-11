@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated graphix -->
+      <package
+            uri="http://winklerweb.net/graphix/1.0.0"
+            class="net.winklerweb.cdoxtext.example.graphix.GraphixPackage"
+            genModel="model/graphix.genmodel"/>
+   </extension>
+
+</plugin>

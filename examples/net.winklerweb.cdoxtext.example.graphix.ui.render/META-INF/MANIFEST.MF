@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Render
+Bundle-SymbolicName: net.winklerweb.cdoxtext.example.graphix.ui.render;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: net.winklerweb.cdoxtext.example.graphix.ui.render.GraphixRenderPlugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.winklerweb.cdoxtext.example.graphix;bundle-version="0.1.0",
+ org.eclipse.xtend.lib,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+

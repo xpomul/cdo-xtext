@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="net.winklerweb.cdoxtext.example.graphix.ui.render.RendererView"
+            id="net.winklerweb.cdoxtext.example.graphix.ui.render.view"
+            name="Graphix Rendering"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="net.winklerweb.cdoxtext.example.graphix.ui.render.showInRenderer"
+               label="Show in Graphix Renderer"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="net.winklerweb.cdoxtext.example.graphix.ui.render.ShowInRendererHandler"
+            commandId="net.winklerweb.cdoxtext.example.graphix.ui.render.showInRenderer">
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="net.winklerweb.cdoxtext.example.graphix.GraphixCanvas">
+                     </adapt>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="net.winklerweb.cdoxtext.example.graphix.ui.render.showInRenderer"
+            name="Show in Renderer">
+      </command>
+   </extension>
+
+</plugin>

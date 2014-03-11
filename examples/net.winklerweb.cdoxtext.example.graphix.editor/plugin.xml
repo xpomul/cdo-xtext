@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated graphix -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="net.winklerweb.cdoxtext.example.graphix.presentation.GraphixModelWizardID"
+            name="%_UI_GraphixModelWizard_label"
+            class="net.winklerweb.cdoxtext.example.graphix.presentation.GraphixModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/GraphixModelFile.gif">
+         <description>%_UI_GraphixModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated graphix -->
+      <editor
+            id="net.winklerweb.cdoxtext.example.graphix.presentation.GraphixEditorID"
+            name="%_UI_GraphixEditor_label"
+            icon="icons/full/obj16/GraphixModelFile.gif"
+            extensions="graphixmi"
+            class="net.winklerweb.cdoxtext.example.graphix.presentation.GraphixEditor"
+            contributorClass="net.winklerweb.cdoxtext.example.graphix.presentation.GraphixActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="Copyright (c) 2013-2014 Stefan Winkler (Kiel, Germany) and others.&#xA;All rights reserved. This program and the accompanying materials&#xA;are made available under the terms of the Eclipse Public License v1.0&#xA;which accompanies this distribution, and is available at&#xA;http://www.eclipse.org/legal/epl-v10.html&#xA;&#xA;Contributors:&#xA;   Stefan Winkler - initial contribution&#xA;"
+    modelDirectory="/net.winklerweb.cdoxtext.example.graphix/src" editDirectory="/net.winklerweb.cdoxtext.example.graphix.edit/src"
+    editorDirectory="/net.winklerweb.cdoxtext.example.graphix.editor/src" modelPluginID="net.winklerweb.cdoxtext.example.graphix"
+    modelName="Graphix" modelPluginClass="" editPluginClass="net.winklerweb.cdoxtext.example.graphix.provider.GraphixEditPlugin"
+    editorPluginClass="net.winklerweb.cdoxtext.example.graphix.presentation.GraphixEditorPlugin"
+    rootExtendsInterface="org.eclipse.emf.cdo.CDOObject" rootExtendsClass="org.eclipse.emf.internal.cdo.CDOObjectImpl"
+    reflectiveDelegation="true" testsDirectory="/net.winklerweb.cdoxtext.example.graphix.tests/src"
+    testSuiteClass="net.winklerweb.cdoxtext.example.graphix.tests.GraphixAllTests"
+    importerID="org.eclipse.emf.importer.cdo" featureDelegation="Reflective" complianceLevel="6.0"
+    copyrightFields="false" editPluginID="net.winklerweb.cdoxtext.example.graphix.edit"
+    editorPluginID="net.winklerweb.cdoxtext.example.editor" testsPluginID="net.winklerweb.cdoxtext.example.graphix.tests"
+    language="" operationReflection="true" importOrganizing="true">
+  <foreignModel>graphix.ecore</foreignModel>
+  <modelPluginVariables>CDO=org.eclipse.emf.cdo</modelPluginVariables>
+  <genPackages prefix="Graphix" basePackage="net.winklerweb.cdoxtext.example" disposableProviderFactory="true"
+      fileExtensions="graphixmi" ecorePackage="graphix.ecore#/">
+    <genClasses image="false" ecoreClass="graphix.ecore#//Shape">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graphix.ecore#//Shape/lineColor"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference graphix.ecore#//Shape/fillColor"/>
+    </genClasses>
+    <genClasses ecoreClass="graphix.ecore#//Circle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Circle/radius"/>
+      <genFeatures property="Readonly" children="true" createChild="true" propertyCategory=""
+          ecoreFeature="ecore:EReference graphix.ecore#//Circle/center"/>
+    </genClasses>
+    <genClasses ecoreClass="graphix.ecore#//Color">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Color/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Color/red"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Color/green"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Color/blue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Color/alpha"/>
+    </genClasses>
+    <genClasses ecoreClass="graphix.ecore#//GraphixCanvas">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graphix.ecore#//GraphixCanvas/content"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graphix.ecore#//GraphixCanvas/lowerLeftBounds"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference graphix.ecore#//GraphixCanvas/upperRightBounds"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="graphix.ecore#//GraphixElement"/>
+    <genClasses ecoreClass="graphix.ecore#//Point">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Point/y"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute graphix.ecore#//Point/x"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

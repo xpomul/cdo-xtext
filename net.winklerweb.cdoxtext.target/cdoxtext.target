@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target includeMode="feature" name="graphix" sequenceNumber="11">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xtext.runtime.feature.group" version="2.4.2.v201306120542"/>
+<unit id="org.eclipse.xtext.xbase.feature.group" version="2.4.2.v201306120542"/>
+<unit id="org.eclipse.xtext.ui.feature.group" version="2.4.2.v201306120542"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="2.1.0.201306101322"/>
+<unit id="org.eclipse.emf.compare.feature.group" version="2.1.0.201306101322"/>
+<unit id="org.eclipse.emf.cdo.epp.feature.group" version="4.2.0.v20130613-1556"/>
+<repository location="http://download.eclipse.org/releases/kepler"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.rcp.feature.group" version="4.3.1.v20130911-1000"/>
+<unit id="org.eclipse.rcp.source.feature.group" version="4.3.1.v20130911-1000"/>
+<unit id="org.eclipse.platform.ide" version="4.3.1.M20130911-1000"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.3"/>
+</location>
+</locations>
+</target>
