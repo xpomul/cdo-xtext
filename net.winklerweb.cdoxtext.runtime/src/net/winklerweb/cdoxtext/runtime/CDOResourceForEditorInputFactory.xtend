@@ -24,7 +24,7 @@ class CDOResourceForEditorInputFactory extends ResourceForIEditorInputFactory im
 	 */
 	override createResource(IEditorInput input) {
 		if(!(input instanceof CDOLobEditorInput)) {
-			return this.createResource(input);
+			return super.createResource(input);
 		}
 		
 		val cdoEditorInput = input as CDOLobEditorInput
