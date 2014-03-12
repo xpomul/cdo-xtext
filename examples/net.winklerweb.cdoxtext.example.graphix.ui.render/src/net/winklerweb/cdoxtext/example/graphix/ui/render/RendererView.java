@@ -17,6 +17,9 @@ import net.winklerweb.cdoxtext.example.graphix.GraphixElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.cdo.view.CDOAdapterPolicy;
+import org.eclipse.emf.cdo.view.CDOInvalidationPolicy;
+import org.eclipse.emf.cdo.view.CDOStaleReferencePolicy;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
@@ -97,6 +100,10 @@ public class RendererView extends ViewPart {
 			input.eAdapters().add(contentAdapter);
 			try {
 				input.cdoView().options().setInvalidationNotificationEnabled(true);
+				input.cdoView().options().addChangeSubscriptionPolicy(CDOAdapterPolicy.ALL);
+				input.cdoView().options().setDetachmentNotificationEnabled(true);
+				input.cdoView().options().setInvalidationPolicy(CDOInvalidationPolicy.STRICT);
+				input.cdoView().options().setStaleReferencePolicy(CDOStaleReferencePolicy.PROXY);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -138,6 +145,10 @@ public class RendererView extends ViewPart {
 			canvas.redraw();
 			return Status.OK_STATUS;
 		}		
+	}
+
+	public void refresh() {
+		canvas.redraw();
 	}
 
 }

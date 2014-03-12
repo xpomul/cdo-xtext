@@ -28,6 +28,7 @@ class ContentAdapter extends EContentAdapter {
 	override notifyChanged(Notification notification) {
 		super.notifyChanged(notification)
 		val source = notification.notifier
+		try {
 		switch source {
 		Circle : 
 			parent.scheduleHighlight(source)
@@ -41,6 +42,11 @@ class ContentAdapter extends EContentAdapter {
 		
 		Color : 
 			parent.scheduleHighlight(source)
+		}
+		
+		}
+		catch(Exception e) {
+			parent.refresh();
 		}
 	}
 
