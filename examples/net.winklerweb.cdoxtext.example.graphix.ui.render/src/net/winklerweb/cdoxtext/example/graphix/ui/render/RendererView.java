@@ -68,6 +68,8 @@ public class RendererView extends ViewPart {
 				paintCanvas(e.gc, e.x, e.y, e.x+e.width, e.y + e.height);
 			}
 		});
+		
+		new RepaintJob().schedule(1000l);
 	}
 	
 	protected void paintCanvas(GC gc, int x, int y, int x2, int y2) {
@@ -102,8 +104,8 @@ public class RendererView extends ViewPart {
 				input.cdoView().options().setInvalidationNotificationEnabled(true);
 				input.cdoView().options().addChangeSubscriptionPolicy(CDOAdapterPolicy.ALL);
 				input.cdoView().options().setDetachmentNotificationEnabled(true);
-				input.cdoView().options().setInvalidationPolicy(CDOInvalidationPolicy.STRICT);
-				input.cdoView().options().setStaleReferencePolicy(CDOStaleReferencePolicy.PROXY);
+				//input.cdoView().options().setInvalidationPolicy(CDOInvalidationPolicy.STRICT);
+				//input.cdoView().options().setStaleReferencePolicy(CDOStaleReferencePolicy.PROXY);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -115,7 +117,6 @@ public class RendererView extends ViewPart {
 
 	public void scheduleHighlight(GraphixElement element) {
 		renderer.getHighlights().add(element);
-		new RepaintJob().schedule(10l);
 		new UnhighlightJob(element).schedule(1000l);
 	}
 	
@@ -143,6 +144,7 @@ public class RendererView extends ViewPart {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			canvas.redraw();
+			schedule(500l);
 			return Status.OK_STATUS;
 		}		
 	}
