@@ -12,7 +12,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.emf.compare;bundle-version="3.0.0",
  org.eclipse.emf.compare.rcp;bundle-version="2.1.1",
  org.eclipse.emf.compare.rcp.ui;bundle-version="3.0.1",
- org.eclipse.ui.ide;bundle-version="3.9.1"
+ org.eclipse.ui.ide;bundle-version="3.9.1",
+ org.eclipse.emf.compare.ide.ui;bundle-version="3.0.0",
+ org.eclipse.emf.compare.edit;bundle-version="3.0.0",
+ org.eclipse.emf.compare.ide;bundle-version="3.0.0",
+ org.eclipse.compare;bundle-version="3.5.401"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: net.winklerweb.cdoxtext.runtime

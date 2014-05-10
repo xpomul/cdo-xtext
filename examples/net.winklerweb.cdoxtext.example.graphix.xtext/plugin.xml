@@ -7,7 +7,7 @@
   <extension
         point="org.eclipse.emf.compare.rcp.matchEngine">
      <engineFactory
-           class="net.winklerweb.cdoxtext.example.ui.GraphixExecutableExtensionFactory:net.winklerweb.cdoxtext.example.cdoxtext.GraphixMatchEngineFactory"
+           class="net.winklerweb.cdoxtext.example.cdoxtext.GraphixMatchEngineFactory"
            ranking="20">
      </engineFactory>
   </extension>	

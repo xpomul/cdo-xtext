@@ -13,11 +13,11 @@ import org.eclipse.emf.compare.match.impl.MatchEngineFactoryImpl
 
 class GraphixMatchEngineFactory extends MatchEngineFactoryImpl { 
 	
-	@Inject
-	Provider<ProximityEObjectMatcher$DistanceFunction> dfProvider
+	//@Inject
+	//Provider<ProximityEObjectMatcher$DistanceFunction> dfProvider
 	
 	override getMatchEngine() {
-		val matcher = new ProximityEObjectMatcher(dfProvider.get)
+		val matcher = new ProximityEObjectMatcher(new GraphixDistanceFunction())
 		return new DefaultMatchEngine(matcher, new DefaultComparisonFactory(new DefaultEqualityHelperFactory()))
 	}	
 }

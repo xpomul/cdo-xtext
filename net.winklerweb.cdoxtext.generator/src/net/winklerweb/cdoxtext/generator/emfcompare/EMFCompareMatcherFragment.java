@@ -24,17 +24,17 @@ public class EMFCompareMatcherFragment extends AbstractGeneratorFragment {
 
 	public static String getMatchEngineFactoryName(Grammar grammar,
 			Naming naming) {
-		return naming.basePackageRuntime(grammar) + ".cdoxtext."
+		return naming.basePackageUi(grammar) + ".cdoxtext."
 				+ GrammarUtil.getName(grammar) + "MatchEngineFactory";
 	}
 
 	public static String getDistanceFunctionName(Grammar grammar, Naming naming) {
-		return naming.basePackageRuntime(grammar) + ".cdoxtext."
+		return naming.basePackageUi(grammar) + ".cdoxtext."
 				+ GrammarUtil.getName(grammar) + "DistanceFunction";
 	}
 
 	@Override
-	public Set<Binding> getGuiceBindingsRt(Grammar grammar) {
+	public Set<Binding> getGuiceBindingsUi(Grammar grammar) {
 		return new BindFactory()
 				.addTypeToType(
 						"org.eclipse.emf.compare.match.IMatchEngine.Factory",
@@ -46,7 +46,7 @@ public class EMFCompareMatcherFragment extends AbstractGeneratorFragment {
 	}
 	
 	@Override
-	public String[] getRequiredBundlesRt(Grammar grammar) {
+	public String[] getRequiredBundlesUi(Grammar grammar) {
 		return new String[] {
 				"org.eclipse.emf.compare",
 				"org.eclipse.emf.compare.rcp",				

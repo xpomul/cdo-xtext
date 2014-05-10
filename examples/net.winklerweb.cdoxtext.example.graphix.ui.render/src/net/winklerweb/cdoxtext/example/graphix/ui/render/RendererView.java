@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
@@ -150,7 +151,12 @@ public class RendererView extends ViewPart {
 	}
 
 	public void refresh() {
-		canvas.redraw();
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				canvas.redraw();
+			}
+		});
 	}
 
 }

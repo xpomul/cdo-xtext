@@ -3,91 +3,109 @@
  */
 package net.winklerweb.cdoxtext.example.cdoxtext
 
-import com.google.inject.Inject
-import java.util.List
+import net.winklerweb.cdoxtext.example.graphix.Circle
+import net.winklerweb.cdoxtext.example.graphix.Color
+import net.winklerweb.cdoxtext.example.graphix.GraphixCanvas
+import net.winklerweb.cdoxtext.example.graphix.Point
+import org.apache.commons.lang.StringUtils
+import org.eclipse.emf.cdo.CDOObject
+import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.compare.Comparison
-import org.eclipse.emf.compare.match.eobject.ProximityEObjectMatcher$DistanceFunction
-import org.eclipse.emf.ecore.EAttribute
+import org.eclipse.emf.compare.match.eobject.ProximityEObjectMatcher
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
-import org.eclipse.emf.ecore.EStructuralFeature
-import org.eclipse.emf.ecore.util.EcoreUtil
-import org.eclipse.emf.ecore.util.FeatureMap
-import org.eclipse.emf.ecore.util.FeatureMapUtil
 
-class GraphixDistanceFunction implements ProximityEObjectMatcher$DistanceFunction { 
+class GraphixDistanceFunction implements ProximityEObjectMatcher.DistanceFunction { 
 	
-	@Inject
-	EcoreUtil$EqualityHelper eqHelper
-
 	override distance(Comparison comp, EObject a, EObject b) {
 		if (!a.eClass.equals(b.eClass)) {
 			return Integer::MAX_VALUE
 		}
 
-		val eClass = a.eClass
-		val size = eClass.featureCount
+		val result = compareObjects(a as CDOObject,b as CDOObject)
+		return result;
+	}
+	
+	def double internalCompareObjects(CDOObject a, CDOObject b) {
+		if(a === null && b === null) {
+			return 0.0d
+		}
 		
-		val matches = eClass.getEAllStructuralFeatures.fold(0, [ count, feature | return count + if(!feature.isDerived && haveEqualFeature(a,b,feature)) 1 else 0 ])
-
-		return size - matches
-	}
-
-	def haveEqualFeature(EObject eObject1, EObject eObject2, EStructuralFeature feature) {
-		return eObject1.eIsSet(feature) == eObject2.eIsSet(feature)
-				&& if (feature instanceof EReference)  haveEqualReference(eObject1, eObject2, feature as EReference)
-				   else haveEqualAttribute(eObject1, eObject2, feature as EAttribute)
-	}
-
-	def haveEqualReference(EObject eObject1, EObject eObject2, EReference reference) {
-		val value1 = eObject1.eGet(reference)
-		val value2 = eObject2.eGet(reference)
-
-		return if(reference.isMany()) eqHelper.equals(value1 as List<EObject>, value2 as List<EObject>) 
-			   else eqHelper.equals(value1 as EObject, value2 as EObject)
-	}
-
-	def haveEqualAttribute(EObject eObject1, EObject eObject2, EAttribute attribute) {
-		val value1 = eObject1.eGet(attribute)
-		val value2 = eObject2.eGet(attribute)
-
-		if (value1 == null) return value2 == null
-		if (value2 == null) return false
-		if (FeatureMapUtil::isFeatureMap(attribute)) return equalFeatureMaps(value1 as FeatureMap, value2 as FeatureMap)
-		return value1.equals(value2)
-	}
-
-	def equalFeatureMaps(FeatureMap featureMap1, FeatureMap featureMap2) {
-		if (featureMap1.size != featureMap2.size) return false
+		if(a === null || b === null) {
+			return 10000.0d
+		}
 		
-		for (int i : 0 ..<featureMap1.size) {
+		return compareObjects(a,b)
+	}
+	
+	def dispatch double compareObjects(GraphixCanvas a, GraphixCanvas b) {
+		return 0.0d
+	}
+
+	def dispatch double compareObjects(Color a, Color b) {
+		return (StringUtils::getLevenshteinDistance(a.name, b.name) as double)
+		  * (100.0 * (Math::abs(a.red - b.red) + Math::abs(a.green - b.green) + Math::abs(a.blue - b.blue)))
+	}
+
+	def dispatch double compareObjects(Point a, Point b) {
+		return compareContainment(a, b) + Math::abs(a.x - a.y) + Math::abs(b.x - b.y)
+	}
+
+	def dispatch double compareObjects(Circle a, Circle b) {
+		return Math::abs(a.radius - b.radius) + Math::abs(a.center.x - b.center.x) + Math::abs(a.center.y - b.center.y) 
+		+ 0.5 * internalCompareObjects(a.lineColor, b.lineColor) + 0.5 * internalCompareObjects(a.fillColor, b.fillColor)
+	}
+	
+	def compareContainment(EObject a, EObject b) {
+		val base1 = if (a.eContainingFeature == b.eContainingFeature) { 0.0d } else { 10.0d } 
+		val base2 = if (a.eContainer.eClass == b.eContainer.eClass) { 0.0d } else { 10.0d }
+		
+		return base1 + base2;
+	}
 			
-			val feature = featureMap1.getEStructuralFeature(i)
-			if (feature != featureMap2.getEStructuralFeature(i)) {
-				return false
-			}
-
-			val value1 = featureMap1.getValue(i)
-			val value2 = featureMap2.getValue(i)
-
-			if (!equalFeatureMapValues(value1, value2, feature)) {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	def equalFeatureMapValues(Object value1, Object value2, EStructuralFeature feature) {
-		if (feature instanceof EReference) {
-			return eqHelper.equals(value1 as EObject, value2 as EObject)
-		} else {
-			return if(value1 == null)  value2 == null 
-				   else value1.equals(value2)
-		}
-	}
-
 	override areIdentic(Comparison comp, EObject a, EObject b) {
-		return eqHelper.equals(a, b)
-	}	
+		if(a == null && b == null)
+			return true
+			
+		if(a == null || b == null)
+			return false
+		
+		if(a.eClass == null && b.eClass == null) {
+			return a == b
+		}
+		
+		if(a.eClass == null || b.eClass == null) {
+			return false
+		}
+		
+		if(a.eClass != b.eClass) {
+			return false
+		} else {
+			return a.eClass.EStructuralFeatures.forall[ f |
+				if(f.many) {
+					val list_a = a.eGet(f) as EList
+					val list_b = b.eGet(f) as EList
+					if(list_a.size() != list_b.size()) {
+						false
+					} else {
+						var result = true
+						for(i : 0 ..< list_a.size()) {
+							if(f instanceof EReference) {
+								result = result && areIdentic(comp, list_a.get(i) as EObject, list_b.get(i) as EObject)
+							} else {
+								result = result && list_a.get(i) == list_b.get(i)
+							}
+						}
+						result
+					}
+				} else {
+					if(f instanceof EReference) {
+						areIdentic(comp, a.eGet(f) as EObject, b.eGet(f) as EObject)
+					} else {
+						a.eGet(f) == b.eGet(f)
+					}
+				}
+			]
+		}
+	}		
 }

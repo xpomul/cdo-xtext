@@ -18,9 +18,9 @@
  
 «DEFINE addToStandaloneSetup FOR Grammar»«ENDDEFINE»
  
-«DEFINE addToPluginXmlUi FOR Grammar»«ENDDEFINE»
+«DEFINE addToPluginXmlRt FOR Grammar»«ENDDEFINE»
 
-«DEFINE addToPluginXmlRt FOR Grammar»
+«DEFINE addToPluginXmlUi FOR Grammar»
   <extension
         point="org.eclipse.emf.compare.rcp.matchEngine">
      <engineFactory

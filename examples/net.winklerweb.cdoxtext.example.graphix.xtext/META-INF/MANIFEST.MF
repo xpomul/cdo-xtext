@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.xtext;visibility:=reexport,
  org.eclipse.xtext.common.types,
  org.eclipse.emf.compare,
  org.eclipse.emf.compare.rcp,
- org.eclipse.emf.compare.rcp.ui
+ org.eclipse.emf.compare.rcp.ui,
+ org.apache.commons.lang;bundle-version="2.6.0"
 Import-Package: org.apache.log4j,
  org.eclipse.xtext.xbase.lib
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

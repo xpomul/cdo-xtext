@@ -11,20 +11,33 @@
  */
 package net.winklerweb.cdoxtext.runtime
 
+import com.google.common.base.Strings
 import com.google.common.collect.Maps
 import com.google.inject.Inject
-import com.google.inject.name.Named
 import java.util.Collections
 import java.util.Map
+import org.eclipse.compare.CompareConfiguration
+import org.eclipse.compare.CompareUI
 import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.core.runtime.SubMonitor
+import org.eclipse.emf.cdo.CDOObject
+import org.eclipse.emf.cdo.common.id.CDOID
+import org.eclipse.emf.cdo.common.revision.CDORevision
 import org.eclipse.emf.cdo.eresource.CDOResource
 import org.eclipse.emf.cdo.internal.ui.CDOLobEditorInput
 import org.eclipse.emf.cdo.transaction.CDOTransaction
+import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.compare.Diff
+import org.eclipse.emf.compare.DifferenceSource
 import org.eclipse.emf.compare.EMFCompare
+import org.eclipse.emf.compare.domain.impl.EMFCompareEditingDomain
+import org.eclipse.emf.compare.ide.ui.internal.editor.ComparisonEditorInput
 import org.eclipse.emf.compare.rcp.EMFCompareRCPPlugin
+import org.eclipse.emf.compare.utils.EMFComparePrettyPrinter
+import org.eclipse.emf.ecore.EAttribute
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory
 import org.eclipse.jface.text.IDocument
 import org.eclipse.ui.IEditorInput
 import org.eclipse.xtext.resource.XtextResource
@@ -32,10 +45,19 @@ import org.eclipse.xtext.serializer.ISerializer
 import org.eclipse.xtext.ui.editor.model.IResourceForEditorInputFactory
 import org.eclipse.xtext.ui.editor.model.XtextDocument
 import org.eclipse.xtext.ui.editor.model.XtextDocumentProvider
+import org.eclipse.emf.compare.diff.DefaultDiffEngine
+import org.eclipse.emf.compare.diff.IDiffProcessor
+import org.eclipse.emf.compare.Match
+import org.eclipse.emf.compare.DifferenceKind
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.emf.compare.diff.DiffBuilder
+import org.eclipse.emf.compare.utils.DiffUtil
+import org.eclipse.emf.compare.merge.BatchMerger
+import org.eclipse.emf.common.util.BasicMonitor
 
 class CDOXtextDocumentProvider extends XtextDocumentProvider {
 
-	static var Map<IEditorInput, XtextResource> inputToResource = Collections::synchronizedMap(Maps::newHashMap()) 
+	static var Map<IEditorInput, OriginalInputState> inputToResource = Collections::synchronizedMap(Maps::newHashMap()) 
  
 	@Inject
 	var ISerializer serializer
@@ -63,7 +85,7 @@ class CDOXtextDocumentProvider extends XtextDocumentProvider {
 		val cdoEditorInput = editorInput as CDOLobEditorInput
 		val resource = cdoEditorInput.resource as CDOResource
 
-		val contents = resource.contents.head
+		val contents = resource.contents.head as CDOObject
 
 		if(contents != null) {
 			document.set(serializer.serialize(contents))
@@ -74,9 +96,13 @@ class CDOXtextDocumentProvider extends XtextDocumentProvider {
 		loadResource(xtextResource, xtextDocument.get(), encoding)
 		xtextDocument.setInput(xtextResource)
 
-		// we need to remember the XtextResource for saving ...
-		inputToResource.put(editorInput, xtextResource)
-
+		// we need to remember the XtextResource and the original object for saving ...
+		if(contents != null) {
+			inputToResource.put(editorInput, new OriginalInputState(xtextResource, contents.cdoID, System.currentTimeMillis()))			
+		} else {
+			inputToResource.put(editorInput, new OriginalInputState(xtextResource, null, CDORevision::INVALID_DATE))				
+		}
+	
 		return true
 	}
 
@@ -108,41 +134,63 @@ class CDOXtextDocumentProvider extends XtextDocumentProvider {
 
 		val mon = SubMonitor::convert(monitor, 5)
 
-		// get original model from CDO
-		val cdoEditorInput = element as CDOLobEditorInput
-		val res = cdoEditorInput.resource as CDOResource
-		val originalStateRoot = res.contents.head
-		
 		// get modified model from XtextResource
-		val documentResource = inputToResource.get(element)
+		val originalInputState = inputToResource.get(element)
+		val documentResource = originalInputState.resource
 		val newStateRoot = documentResource.contents.head
 
-		// if the resource was empty before
-		if(originalStateRoot == null) {
-			res.contents.add(newStateRoot)	
-		} else {
+		// get original state from CDO
+		val cdoInput = element as CDOLobEditorInput 
+		val targetResource = cdoInput.resource as CDOResource
+		
+		val cdoSession = cdoInput.resource.cdoView.session
 
-			// fire up EMFCompare				
-			val scope = EMFCompare::createDefaultScope(newStateRoot, originalStateRoot)
-	
-			val matcherRegistry = EMFCompareRCPPlugin::^default.matchEngineFactoryRegistry
-			val compare = EMFCompare::builder().setMatchEngineFactoryRegistry(matcherRegistry).build()
-			val result = compare.compare(scope)
-	
-			val mergerReg = EMFCompareRCPPlugin::^default.mergerRegistry
-	
-			for (Diff d : result.getDifferences()) {
-				mergerReg.getHighestRankingMerger(d).copyLeftToRight(d, null)
+		if(originalInputState.timestamp == CDORevision::INVALID_DATE) {
+			// if the resource was empty before, add the new root
+			targetResource.contents.add(newStateRoot)			
+		} else {
+			val historicView = cdoSession.openView(originalInputState.timestamp)
+			try {
+				val originalStateRoot = historicView.getObject(originalInputState.objectId, true)
+				val targetStateRoot = targetResource.contents.head
+				
+				// fire up EMFCompare				
+				val scope = EMFCompare::createDefaultScope(newStateRoot, targetStateRoot, originalStateRoot)
+		
+				val matcherRegistry = EMFCompareRCPPlugin::^default.matchEngineFactoryRegistry
+				val compare = EMFCompare::builder().setMatchEngineFactoryRegistry(matcherRegistry).build()
+				val result = compare.compare(scope, BasicMonitor::toMonitor(mon.newChild(1)))
+				
+				val merger = new BatchMerger(EMFCompareRCPPlugin::^default.mergerRegistry, [ diff | 
+					diff.source == DifferenceSource::LEFT 
+				])
+				merger.copyAllLeftToRight(result.differences, BasicMonitor::toMonitor(mon.newChild(1)))
+				
+			}
+			finally {
+				historicView.close()
 			}
 		}
 		
-		val transaction = res.cdoView() as CDOTransaction
-		
-		transaction.commit(mon.newChild(2))
+		val transaction = targetResource.cdoView() as CDOTransaction
+		val newCommitInfo = transaction.commit(mon.newChild(3))
+		val rootObject = targetResource.contents.head as CDOObject
+		inputToResource.put(cdoInput, new OriginalInputState(documentResource, rootObject.cdoID, newCommitInfo.timeStamp))	
 
-		if (monitor != null) {
-			monitor.done()
-		}
+		document.set(serializer.serialize(rootObject))
+ 
+		mon.done()
 	}
 }
 
+class OriginalInputState {
+	public XtextResource resource
+	public CDOID objectId
+	public long timestamp
+	
+	new(XtextResource resource, CDOID cdoid, long timestamp) {
+		this.resource = resource
+		this.objectId = cdoid
+		this.timestamp = timestamp
+	}
+}

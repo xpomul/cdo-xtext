@@ -392,5 +392,45 @@
             extensions="gfx">
     </provider>
   </extension>
+  <extension
+        point="org.eclipse.ui.commands">
+     <command
+           id="net.winklerweb.cdoxtext.example.graphix.xtext.ui.EditElement"
+           name="Edit Element">
+     </command>
+  </extension>
+  <extension
+        point="org.eclipse.ui.handlers">
+     <handler
+           class="net.winklerweb.cdoxtext.example.ui.GraphixExecutableExtensionFactory:net.winklerweb.cdoxtext.example.ui.EditElementHandler"
+           commandId="net.winklerweb.cdoxtext.example.graphix.xtext.ui.EditElement">
+        <enabledWhen>
+           <and>
+              <count
+                    value="1">
+              </count>
+              <iterate
+                    ifEmpty="false"
+                    operator="and">
+                 <instanceof
+                       value="net.winklerweb.cdoxtext.example.graphix.GraphixElement">
+                 </instanceof>
+              </iterate>
+           </and>
+        </enabledWhen>
+     </handler>
+  </extension>
+  <extension
+        point="org.eclipse.ui.menus">
+     <menuContribution
+           allPopups="false"
+           locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+        <command
+              commandId="net.winklerweb.cdoxtext.example.graphix.xtext.ui.EditElement"
+              label="Edit Element w/ Xtext"
+              style="push">
+        </command>
+     </menuContribution>
+  </extension>
 
 </plugin>
