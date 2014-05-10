@@ -44,6 +44,10 @@ import com.google.inject.Provider;
 
 public class EditElementDialog extends Dialog {
 
+	public interface Factory {
+		EditElementDialog create(Shell activeShellChecked, GraphixElement e);
+	}
+
 	private GraphixElement element;
 
 	@Inject 
@@ -66,13 +70,6 @@ public class EditElementDialog extends Dialog {
 	public EditElementDialog(Shell shell, GraphixElement element) {
 		super(shell);
 		this.element = element;
-
-		// quick and dirty - replace with factory later
-		GraphixActivator
-				.getInstance()
-				.getInjector(
-						GraphixActivator.NET_WINKLERWEB_CDOXTEXT_EXAMPLE_GRAPHIX)
-				.injectMembers(this);
 	}
 
 	@Override
