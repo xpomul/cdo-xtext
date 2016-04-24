@@ -9,21 +9,27 @@ import org.eclipse.xtext.xtext.generator.model.GuiceModuleAccess
 
 import static extension org.eclipse.xtext.GrammarUtil.*
 import static extension org.eclipse.xtext.xtext.generator.model.TypeReference.*
+import java.util.List
+import org.eclipse.xtext.xtext.generator.model.TypeReference
 
 class EMFCompareMatcherFragment2 extends AbstractXtextGeneratorFragment {
 
 	@Inject
 	extension XtextGeneratorNaming
-	
+
 	@Inject FileAccessFactory fileAccessFactory
 
 	override generate() {
 		registerGuiceBindingsUi()
 		addRequiredBundlesUi()
 		registerExtensions()
-		
+
 		generateMatchEngineFactory()
 		generateDistanceFunction()
+	}
+
+	private static def typeRef(String packageName, String name) {
+		return new TypeReference(packageName, name);
 	}
 
 	private def matchEngineFactoryName(Grammar grammar) {
@@ -35,10 +41,11 @@ class EMFCompareMatcherFragment2 extends AbstractXtextGeneratorFragment {
 	}
 
 	private def registerGuiceBindingsUi() {
-		new GuiceModuleAccess.BindingFactory()
-		.addTypeToType("org.eclipse.emf.compare.match.IMatchEngine$Factory".typeRef, grammar.matchEngineFactoryName.typeRef)
-		.addTypeToType("org.eclipse.emf.compare.match.eobject.ProximityEObjectMatcher$DistanceFunction".typeRef, grammar.distanceFunctionName.typeRef)
-		.contributeTo(language.eclipsePluginGenModule)
+		new GuiceModuleAccess.BindingFactory().addTypeToType(
+			"org.eclipse.emf.compare.match.IMatchEngine".typeRef("Factory"), grammar.matchEngineFactoryName.typeRef)
+			.addTypeToType("org.eclipse.emf.compare.match.eobject.ProximityEObjectMatcher".typeRef("DistanceFunction"),
+				grammar.distanceFunctionName.typeRef)
+			.contributeTo(language.eclipsePluginGenModule)
 	}
 
 	private def addRequiredBundlesUi() {
@@ -64,7 +71,8 @@ class EMFCompareMatcherFragment2 extends AbstractXtextGeneratorFragment {
 	}
 
 	def generateMatchEngineFactory() {
-		fileAccessFactory.createXtendFile(grammar.matchEngineFactoryName.typeRef,
+		fileAccessFactory.createXtendFile(
+			grammar.matchEngineFactoryName.typeRef,
 			'''
 				import com.google.inject.Inject
 				import com.google.inject.Provider
@@ -90,7 +98,8 @@ class EMFCompareMatcherFragment2 extends AbstractXtextGeneratorFragment {
 	}
 
 	def generateDistanceFunction() {
-		fileAccessFactory.createXtendFile(grammar.distanceFunctionName.typeRef,
+		fileAccessFactory.createXtendFile(
+			grammar.distanceFunctionName.typeRef,
 			'''			
 				import com.google.inject.Inject
 				import java.util.List
