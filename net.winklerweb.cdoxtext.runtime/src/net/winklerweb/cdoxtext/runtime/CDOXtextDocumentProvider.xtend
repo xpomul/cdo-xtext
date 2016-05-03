@@ -11,13 +11,10 @@
  */
 package net.winklerweb.cdoxtext.runtime
 
-import com.google.common.base.Strings
 import com.google.common.collect.Maps
 import com.google.inject.Inject
 import java.util.Collections
 import java.util.Map
-import org.eclipse.compare.CompareConfiguration
-import org.eclipse.compare.CompareUI
 import org.eclipse.core.runtime.CoreException
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.core.runtime.SubMonitor
@@ -27,33 +24,19 @@ import org.eclipse.emf.cdo.common.revision.CDORevision
 import org.eclipse.emf.cdo.eresource.CDOResource
 import org.eclipse.emf.cdo.internal.ui.CDOLobEditorInput
 import org.eclipse.emf.cdo.transaction.CDOTransaction
-import org.eclipse.emf.common.util.EList
-import org.eclipse.emf.compare.Diff
+import org.eclipse.emf.common.util.BasicMonitor
 import org.eclipse.emf.compare.DifferenceSource
 import org.eclipse.emf.compare.EMFCompare
-import org.eclipse.emf.compare.domain.impl.EMFCompareEditingDomain
-import org.eclipse.emf.compare.ide.ui.internal.editor.ComparisonEditorInput
+import org.eclipse.emf.compare.merge.BatchMerger
 import org.eclipse.emf.compare.rcp.EMFCompareRCPPlugin
-import org.eclipse.emf.compare.utils.EMFComparePrettyPrinter
-import org.eclipse.emf.ecore.EAttribute
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.edit.provider.ComposedAdapterFactory
 import org.eclipse.jface.text.IDocument
+import org.eclipse.jface.text.source.AnnotationModel
 import org.eclipse.ui.IEditorInput
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.serializer.ISerializer
 import org.eclipse.xtext.ui.editor.model.IResourceForEditorInputFactory
 import org.eclipse.xtext.ui.editor.model.XtextDocument
 import org.eclipse.xtext.ui.editor.model.XtextDocumentProvider
-import org.eclipse.emf.compare.diff.DefaultDiffEngine
-import org.eclipse.emf.compare.diff.IDiffProcessor
-import org.eclipse.emf.compare.Match
-import org.eclipse.emf.compare.DifferenceKind
-import org.eclipse.emf.ecore.EReference
-import org.eclipse.emf.compare.diff.DiffBuilder
-import org.eclipse.emf.compare.utils.DiffUtil
-import org.eclipse.emf.compare.merge.BatchMerger
-import org.eclipse.emf.common.util.BasicMonitor
 
 class CDOXtextDocumentProvider extends XtextDocumentProvider {
 
@@ -188,6 +171,13 @@ class CDOXtextDocumentProvider extends XtextDocumentProvider {
 		} catch (ClassCastException e) {
 			return getWorkspaceOrDefaultEncoding();
 		}
+	}
+	
+	override createAnnotationModel(Object element) {
+		if (element instanceof CDOLobEditorInput) {
+			return new AnnotationModel();
+		}
+		return super.createAnnotationModel(element)
 	}
 	
 }
