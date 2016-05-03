@@ -181,6 +181,15 @@ class CDOXtextDocumentProvider extends XtextDocumentProvider {
  
 		mon.done()
 	}
+	
+	override getEncoding(Object element) {
+		try {
+			return super.getEncoding(element)
+		} catch (ClassCastException e) {
+			return getWorkspaceOrDefaultEncoding();
+		}
+	}
+	
 }
 
 class OriginalInputState {
