@@ -12,25 +12,30 @@
 package net.winklerweb.cdoxtext.runtime
 
 import java.net.URI
+import org.eclipse.emf.cdo.internal.ui.CDOLobEditorInput
 import org.eclipse.ui.IEditorInput
+import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.ui.editor.model.IResourceForEditorInputFactory
 import org.eclipse.xtext.ui.editor.model.ResourceForIEditorInputFactory
-import org.eclipse.emf.cdo.internal.ui.CDOLobEditorInput
 
 class CDOResourceForEditorInputFactory extends ResourceForIEditorInputFactory implements IResourceForEditorInputFactory {
-	 
+
 	/** 
 	 * Create an XtextResource for a given CDOLobEditorInput
 	 */
 	override createResource(IEditorInput input) {
-		if(!(input instanceof CDOLobEditorInput)) {
+		if (!(input instanceof CDOLobEditorInput)) {
 			return super.createResource(input);
 		}
-		
+
 		val cdoEditorInput = input as CDOLobEditorInput
 		val emfUri = cdoEditorInput.resource.URI
 		val uri = URI::create(emfUri.toString)
-		
-		return createResource(uri)
+
+		val resource = createResource(uri)
+		if (resource instanceof XtextResource) {
+			(resource as XtextResource).validationDisabled = false
+		}
+		return resource
 	}
 }
